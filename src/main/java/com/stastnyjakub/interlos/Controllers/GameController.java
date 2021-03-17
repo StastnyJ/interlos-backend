@@ -5,22 +5,26 @@ import com.stastnyjakub.interlos.Services.LanguageService;
 import com.stastnyjakub.interlos.Services.LanguageService.Instruction;
 import com.stastnyjakub.interlos.Services.LanguageService.Result;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 public class GameController {
 
     private final int INSTRUCTIONS_LIMIT = 10000;
     private final String PASSWORD = "JD8ATZ67VGASOC90AS";
 
+    @CrossOrigin
     @GetMapping("/ping")
     public String ping() {
         return "PING Game controller";
     }
 
+    @CrossOrigin
     @PostMapping("/eval")
     public String evaluate(@RequestBody String code) {
         if (code == null || code.length() == 0)
