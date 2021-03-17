@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-InterlosApplication<interlos>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.stastnyjakub.interlos.InterlosApplication",
+            "projectName": "interlos",
+            "args": ""
+        }
+    ]
+}
