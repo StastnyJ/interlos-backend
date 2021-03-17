@@ -77,7 +77,7 @@ public class LanguageService {
         boolean lastCondJump = false;
         for (char ch : code.toCharArray()) {
             if (Character.isAlphabetic(ch)) {
-                if (usedLetters.contains(ch))
+                if (Character.isLowerCase(ch) && usedLetters.contains(ch))
                     return false;
                 usedLetters.add(ch);
             }
@@ -85,6 +85,8 @@ public class LanguageService {
                 if (lastCondJump)
                     return false;
                 lastCondJump = true;
+            } else {
+                lastCondJump = false;
             }
         }
         if (lastCondJump)
@@ -106,9 +108,9 @@ public class LanguageService {
             if (Instruction.isSimple(current))
                 res.add(Instruction.simpleFromCharacter(current));
             else if (current == '?')
-                res.add(new Instruction(InstructionType.JUMP_IF_NOT_WALL, res.size() + 1));
+                res.add(new Instruction(InstructionType.JUMP_IF_NOT_WALL, res.size() + 2));
             else if (current == '!')
-                res.add(new Instruction(InstructionType.JUMP_IF_WALL, res.size() + 1));
+                res.add(new Instruction(InstructionType.JUMP_IF_WALL, res.size() + 2));
             else {
                 if (Character.isLowerCase(current))
                     lowerLettersPositions.put(current, res.size());

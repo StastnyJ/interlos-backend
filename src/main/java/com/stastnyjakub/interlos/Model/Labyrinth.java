@@ -97,7 +97,7 @@ public class Labyrinth {
                 "#  ##  ##  ##  #", // 12 -----------------------------------------
                 "# ### ####     #", // 13 -----------------------------------------
                 "#      #   ### #", // 14 -----------------------------------------
-                "### ############" // 15 -----------------------------------------
+                "################" // 15 -----------------------------------------
         };
 
         TileType[][] map = Arrays
@@ -105,7 +105,7 @@ public class Labyrinth {
                         .map(c -> c == '#' ? TileType.WALL : TileType.FREE).toArray(TileType[]::new))
                 .toArray(TileType[][]::new);
 
-        return new Labyrinth(map, new Position(15, 3, Position.Orientation.UP), new Position(0, 10));
+        return new Labyrinth(map, new Position(14, 3, Position.Orientation.UP), new Position(0, 9));
     }
 
     public Boolean isWallBeforeMe() {
