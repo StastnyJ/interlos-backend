@@ -61,6 +61,10 @@ public class LanguageService {
         GOAL_REACHED, WALL_HIT, TERMINATED_AFTER_LIMIT, PROGRAM_ENDED
     }
 
+    public enum SyntaxResult {
+        VALID, NO_JUMP_GOAL, ENDS_WITH_CONDITION, MORE_CONDITIONS_IN_ROW, UNNECESSARY_JUMP_GOAL, UNCERTAIN_JUMP_GOAL
+    }
+
     private static final String ALLOWED_CHARS = "<>+-?!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public static Boolean validateAllowedSymbols(String code) {
@@ -72,30 +76,45 @@ public class LanguageService {
         return true;
     }
 
-    public static Boolean validateSyntax(String code) {
+    private static boolean containsOnlyMoveChars(String code) {
+        for (char ch : code.toCharArray())
+            if ("<>+-".indexOf(ch) == -1)
+                return false;
+        return true;
+    }
+
+    public static boolean detectBruteForce(String code) {
+        if (code == null)
+            return false;
+        return code.length() > 15 && containsOnlyMoveChars(code);
+    }
+
+    public static SyntaxResult validateSyntax(String code) {
         Set<Character> usedLetters = new HashSet<>();
         boolean lastCondJump = false;
         for (char ch : code.toCharArray()) {
             if (Character.isAlphabetic(ch)) {
                 if (Character.isLowerCase(ch) && usedLetters.contains(ch))
-                    return false;
+                    return SyntaxResult.UNCERTAIN_JUMP_GOAL;
                 usedLetters.add(ch);
             }
             if (ch == '?' || ch == '!') {
                 if (lastCondJump)
-                    return false;
+                    return SyntaxResult.MORE_CONDITIONS_IN_ROW;
                 lastCondJump = true;
             } else {
                 lastCondJump = false;
             }
         }
         if (lastCondJump)
-            return false;
+            return SyntaxResult.ENDS_WITH_CONDITION;
         for (char ch : usedLetters) {
-            if (!usedLetters.contains(Character.toUpperCase(ch)) || !usedLetters.contains(Character.toLowerCase(ch)))
-                return false;
+            if (Character.isLowerCase(ch) && !usedLetters.contains(Character.toUpperCase(ch)))
+                return SyntaxResult.UNNECESSARY_JUMP_GOAL;
+            if (Character.isUpperCase(ch) && !usedLetters.contains(Character.toLowerCase(ch)))
+                return SyntaxResult.NO_JUMP_GOAL;
         }
-        return true;
+        return SyntaxResult.VALID;
     }
 
     public static Instruction[] compile(String code) {

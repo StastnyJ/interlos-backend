@@ -4,6 +4,7 @@ import com.stastnyjakub.interlos.Model.Labyrinth;
 import com.stastnyjakub.interlos.Services.LanguageService;
 import com.stastnyjakub.interlos.Services.LanguageService.Instruction;
 import com.stastnyjakub.interlos.Services.LanguageService.Result;
+import com.stastnyjakub.interlos.Services.LanguageService.SyntaxResult;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,16 +36,27 @@ public class GameController {
 
         if (!LanguageService.validateAllowedSymbols(code))
             return "Tomuto nerozumím, povolené znaky jsou pouze: < > + - ? ! a-z A-Z.\n";
-        if (!LanguageService.validateSyntax(code))
+        SyntaxResult syntaxRes = LanguageService.validateSyntax(code);
+        if (syntaxRes == SyntaxResult.NO_JUMP_GOAL)
             return "Zkontroluj si, že máš vždy kam skákat.\n";
+        if (syntaxRes == SyntaxResult.ENDS_WITH_CONDITION)
+            return "Nakonci ti ještě něco chybí.\n";
+        if (syntaxRes == SyntaxResult.MORE_CONDITIONS_IN_ROW)
+            return "Ne všechny znaky mohou být za sebou v řadě.\n";
+        if (syntaxRes == SyntaxResult.UNCERTAIN_JUMP_GOAL)
+            return "Některé znaky můžeš použít pouze jednou.\n";
         Instruction[] program = LanguageService.compile(code);
         Labyrinth labyrinth = Labyrinth.getTaskLabyrinth();
         Result res = LanguageService.run(program, labyrinth, INSTRUCTIONS_LIMIT);
         if (res == Result.GOAL_REACHED)
             return "Gratuluji, dostal jsi se z labyrintu. Heslo je: " + PASSWORD + ".\n";
-        else if (res == Result.PROGRAM_ENDED)
-            return "Nenašel jsi cestu ven.\n";
-        else if (res == Result.TERMINATED_AFTER_LIMIT)
+        else if (res == Result.PROGRAM_ENDED) {
+            if (syntaxRes == SyntaxResult.UNNECESSARY_JUMP_GOAL)
+                return "Některé znaky jsou nadbytečné a ignorovány.\n";
+            if (LanguageService.detectBruteForce(code))
+                return "Tvůj kód může vést k cíli, ale existuje kratší a jednodušší řešení.\n";
+            return "Ještě nejsi venku.\n";
+        } else if (res == Result.TERMINATED_AFTER_LIMIT)
             return "Chodíš stále v kruzích, zkus to jinak.\n";
         else if (res == Result.WALL_HIT)
             return "Narazil jsi do zdi.\n";
