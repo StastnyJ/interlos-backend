@@ -109,10 +109,12 @@ public class LanguageService {
         if (lastCondJump)
             return SyntaxResult.ENDS_WITH_CONDITION;
         for (char ch : usedLetters) {
-            if (Character.isLowerCase(ch) && !usedLetters.contains(Character.toUpperCase(ch)))
-                return SyntaxResult.UNNECESSARY_JUMP_GOAL;
             if (Character.isUpperCase(ch) && !usedLetters.contains(Character.toLowerCase(ch)))
                 return SyntaxResult.NO_JUMP_GOAL;
+        }
+        for (char ch : usedLetters) {
+            if (Character.isLowerCase(ch) && !usedLetters.contains(Character.toUpperCase(ch)))
+                return SyntaxResult.UNNECESSARY_JUMP_GOAL;
         }
         return SyntaxResult.VALID;
     }
