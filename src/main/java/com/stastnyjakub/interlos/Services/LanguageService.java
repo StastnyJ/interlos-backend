@@ -76,17 +76,10 @@ public class LanguageService {
         return true;
     }
 
-    private static boolean containsOnlyMoveChars(String code) {
-        for (char ch : code.toCharArray())
-            if ("<>+-".indexOf(ch) == -1)
-                return false;
-        return true;
-    }
-
     public static boolean detectBruteForce(String code) {
         if (code == null)
             return false;
-        return code.length() > 15 && containsOnlyMoveChars(code);
+        return code.length() > 32;
     }
 
     public static SyntaxResult validateSyntax(String code) {

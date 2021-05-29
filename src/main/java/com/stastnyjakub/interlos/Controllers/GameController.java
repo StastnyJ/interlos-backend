@@ -36,6 +36,8 @@ public class GameController {
 
         if (!LanguageService.validateAllowedSymbols(code))
             return "Tomuto nerozumím, povolené znaky jsou pouze: < > + - ? ! a-z A-Z.\n";
+        if (LanguageService.detectBruteForce(code))
+            return "Jseš nějak moc ukecanej.\n";
         SyntaxResult syntaxRes = LanguageService.validateSyntax(code);
         if (syntaxRes == SyntaxResult.NO_JUMP_GOAL)
             return "Zkontroluj si, že máš vždy kam skákat.\n";
@@ -53,9 +55,8 @@ public class GameController {
         else if (res == Result.PROGRAM_ENDED) {
             if (syntaxRes == SyntaxResult.UNNECESSARY_JUMP_GOAL)
                 return "Některé znaky jsou nadbytečné a ignorovány.\n";
-            if (LanguageService.detectBruteForce(code))
-                return "Tvůj kód může vést k cíli, ale existuje kratší a jednodušší řešení.\n";
-            return "Ještě nejsi venku.\n";
+            else
+                return "Ještě nejsi venku.\n";
         } else if (res == Result.TERMINATED_AFTER_LIMIT)
             return "Chodíš stále v kruzích, zkus to jinak.\n";
         else if (res == Result.WALL_HIT)
